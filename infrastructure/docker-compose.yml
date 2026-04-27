@@ -1,0 +1,34 @@
+version: "3.8"
+
+services:
+  # The Primary Database (Relational & Geospatial)
+  postgres:
+    image: postgis/postgis:15-3.4
+    platform: linux/amd64
+    container_name: delivery_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: delivery_admin
+      POSTGRES_PASSWORD: secure_password_123
+      POSTGRES_DB: delivery_platform
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+  # The Real-Time Engine & Cache
+  redis:
+    image: redis:7-alpine
+    container_name: delivery_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+
+volumes:
+  pg_data:
+    name: delivery_pg_data
+  redis_data:
+    name: delivery_redis_data
